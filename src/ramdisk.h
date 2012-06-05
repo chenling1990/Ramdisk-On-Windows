@@ -1,25 +1,7 @@
-/*++
-
-Copyright (c) 1990-2003 Microsoft Corporation, All Rights Reserved
-
-Module Name:
-
-    ramdisk.h
-
-Abstract:
-
-    This file includes data declarations for the Ram Disk driver for NT.
-
-Environment:
-
-    Kernel mode only.
-
---*/
-
 #ifndef _RAMDISK_H_
 #define _RAMDISK_H_
 
-#pragma warning(disable:4201)  // nameless struct/union warning
+#pragma warning(disable:4201) 
 
 #include <ntddk.h>
 #include <ntdddisk.h>
@@ -153,5 +135,5 @@ RamDiskCheckParameters(
     IN size_t Length
     );
 
-#endif    // _RAMDISK_H_
+#endif   
 
