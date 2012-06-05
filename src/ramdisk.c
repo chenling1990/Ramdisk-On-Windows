@@ -1,4 +1,4 @@
-#include "ramdisk"
+#include "ramdisk.h"
 #include "ntintsafe.h"
 
 #ifdef ALLOC_PRAGMA
@@ -234,11 +234,11 @@ NTSTATUS RamDiskEvtDeviceAdd(IN WDFDRIVER Driver,IN PWDFDEVICE_INIT DeviceInit)
     //设置队列的设备扩展为该设备
     pQueueContext->DeviceExtension = pDeviceExtension;
 
-    status = SetForwardProgressOnQueue(queue);
+    /*status = SetForwardProgressOnQueue(queue);
     if (!NT_SUCCESS(status))
     {
         return status;
-    }
+    }*/
 
     //设备初始化
     pDeviceExtension->DiskRegInfo.DriveLetter.Buffer = (PWSTR) &pDeviceExtension->DriveLetterBuffer;
