@@ -29,7 +29,6 @@ Environment:
 #include <wdf.h>
 #define NTSTRSAFE_LIB
 #include <ntstrsafe.h>
-#include "forward_progress.h"
 
 #define NT_DEVICE_NAME                  L"\\Device\\Ramdisk"
 #define DOS_DEVICE_NAME                 L"\\DosDevices\\"
@@ -153,12 +152,6 @@ RamDiskCheckParameters(
     IN LARGE_INTEGER ByteOffset,
     IN size_t Length
     );
-
-EVT_WDF_OBJECT_CONTEXT_CLEANUP EvtForwardProgressRequestCleanup;
-EVT_WDF_OBJECT_CONTEXT_DESTROY EvtForwardProgressRequestDestroy;
-EVT_WDF_IO_WDM_IRP_FOR_FORWARD_PROGRESS EvtIoWdmIrpForForwardProgress;
-EVT_WDF_IO_ALLOCATE_RESOURCES_FOR_RESERVED_REQUEST EvtIoAllocateResourcesForReservedRequest;
-EVT_WDF_IO_ALLOCATE_REQUEST_RESOURCES EvtIoAllocateResources;
 
 #endif    // _RAMDISK_H_
 
