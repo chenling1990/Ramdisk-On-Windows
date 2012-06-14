@@ -402,13 +402,13 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
     // Set OemName to "RajuRam "
     // NOTE: Fill all 8 characters, eg. sizeof(bootSector->bsOemName);
     //
-    bootSector->bsOemName[0] = 'R';
-    bootSector->bsOemName[1] = 'a';
-    bootSector->bsOemName[2] = 'j';
-    bootSector->bsOemName[3] = 'u';
-    bootSector->bsOemName[4] = 'R';
-    bootSector->bsOemName[5] = 'a';
-    bootSector->bsOemName[6] = 'm';
+    bootSector->bsOemName[0] = ' ';
+    bootSector->bsOemName[1] = ' ';
+    bootSector->bsOemName[2] = ' ';
+    bootSector->bsOemName[3] = ' ';
+    bootSector->bsOemName[4] = ' ';
+    bootSector->bsOemName[5] = ' ';
+    bootSector->bsOemName[6] = ' ';
     bootSector->bsOemName[7] = ' ';
 
     bootSector->bsBytesPerSec = (SHORT)devExt->DiskGeometry.BytesPerSector;
@@ -524,14 +524,14 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
     rootDir = (PDIR_ENTRY)(bootSector + 1 + fatSectorCnt);
 
     //卷标
-    rootDir->deName[0] = 'M';
-    rootDir->deName[1] = 'S';
-    rootDir->deName[2] = '-';
-    rootDir->deName[3] = 'R';
-    rootDir->deName[4] = 'A';
-    rootDir->deName[5] = 'M';
-    rootDir->deName[6] = 'D';
-    rootDir->deName[7] = 'R';
+    rootDir->deName[0] = 'R';
+    rootDir->deName[1] = 'A';
+    rootDir->deName[2] = 'M';
+    rootDir->deName[3] = 'D';
+    rootDir->deName[4] = 'I';
+    rootDir->deName[5] = 'S';
+    rootDir->deName[6] = 'K';
+    rootDir->deName[7] = ' ';
 
     //设备扩展名
     rootDir->deExtension[0] = 'I';
