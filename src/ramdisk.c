@@ -248,7 +248,9 @@ NTSTATUS RamDiskEvtDeviceAdd(IN WDFDRIVER Driver,IN PWDFDEVICE_INIT DeviceInit)
     RamDiskQueryDiskRegParameters(WdfDriverGetRegistryPath(WdfDeviceGetDriver(device)),&pDeviceExtension->DiskRegInfo);
 
     //内存分配
-    pDeviceExtension->DiskImage = ExAllocatePoolWithTag(NonPagedPool,pDeviceExtension->DiskRegInfo.DiskSize,RAMDISK_TAG);
+    //pDeviceExtension->DiskImage = ExAllocatePoolWithTag(NonPagedPool,pDeviceExtension->DiskRegInfo.DiskSize,RAMDISK_TAG);
+		pDeviceExtension->DiskImage = ExAllocatePoolWithTag(PagedPool,pDeviceExtension->DiskRegInfo.DiskSize,RAMDISK_TAG);
+
 
     if (pDeviceExtension->DiskImage)
     {
@@ -372,12 +374,12 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
 
     RtlZeroMemory(devExt->DiskImage, devExt->DiskRegInfo.DiskSize);
 
-    devExt->DiskGeometry.BytesPerSector = 512;  //每个扇区有512个字节
+    devExt->DiskGeometry.BytesPerSector = 4096;  //每个扇区有512个字节
     devExt->DiskGeometry.SectorsPerTrack = 32;  // 每个磁道有32个扇区
     devExt->DiskGeometry.TracksPerCylinder = 2; // 每个柱面有两个磁道
 
     //柱面数
-    devExt->DiskGeometry.Cylinders.QuadPart = devExt->DiskRegInfo.DiskSize / 512 / 32 / 2;
+    devExt->DiskGeometry.Cylinders.QuadPart = devExt->DiskRegInfo.DiskSize / devExt->DiskGeometry.BytesPerSector / devExt->DiskGeometry.SectorsPerTrack / devExt->DiskGeometry.TracksPerCylinder;
 
     //磁盘的类型
     devExt->DiskGeometry.MediaType = RAMDISK_MEDIA_TYPE;
@@ -402,13 +404,13 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
     // Set OemName to "RajuRam "
     // NOTE: Fill all 8 characters, eg. sizeof(bootSector->bsOemName);
     //
-    bootSector->bsOemName[0] = ' ';
-    bootSector->bsOemName[1] = ' ';
-    bootSector->bsOemName[2] = ' ';
-    bootSector->bsOemName[3] = ' ';
-    bootSector->bsOemName[4] = ' ';
-    bootSector->bsOemName[5] = ' ';
-    bootSector->bsOemName[6] = ' ';
+    bootSector->bsOemName[0] = 'R';
+    bootSector->bsOemName[1] = 'a';
+    bootSector->bsOemName[2] = 'j';
+    bootSector->bsOemName[3] = 'u';
+    bootSector->bsOemName[4] = 'R';
+    bootSector->bsOemName[5] = 'a';
+    bootSector->bsOemName[6] = 'm';
     bootSector->bsOemName[7] = ' ';
 
     bootSector->bsBytesPerSec = (SHORT)devExt->DiskGeometry.BytesPerSector;
@@ -416,8 +418,8 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
     bootSector->bsFATs        = 1;
     bootSector->bsRootDirEnts = (USHORT)rootDirEntries;
 
-//    bootSector->bsSectors     = (USHORT)(devExt->DiskRegInfo.DiskSize /
-//                                         devExt->DiskGeometry.BytesPerSector);
+ //   bootSector->bsSectors     = (USHORT)(devExt->DiskRegInfo.DiskSize /
+ //                                        devExt->DiskGeometry.BytesPerSector);
 //    bootSector->bsMedia       = (UCHAR)devExt->DiskGeometry.MediaType;
 //    bootSector->bsSecPerClus  = (UCHAR)sectorsPerCluster;
 
@@ -433,14 +435,14 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
     }
     bootSector->bsMedia       = (UCHAR)devExt->DiskGeometry.MediaType;
     bootSector->bsSecPerClus  = 8;//(UCHAR)sectorsPerCluster;
-    //
+    
     // Calculate number of sectors required for FAT
     //
 
-//    fatEntries =
-//        (bootSector->bsSectors - bootSector->bsResSectors -
-//         bootSector->bsRootDirEnts / DIR_ENTRIES_PER_SECTOR) /
-//        bootSector->bsSecPerClus + 2;
+ //   fatEntries =
+ //       (bootSector->bsSectors - bootSector->bsResSectors -
+ //       bootSector->bsRootDirEnts / DIR_ENTRIES_PER_SECTOR) /
+ //       bootSector->bsSecPerClus + 2;
     if(bootSector->bsSectors)
     {
         fatEntries = (bootSector->bsSectors - bootSector->bsResSectors - bootSector->bsRootDirEnts / DIR_ENTRIES_PER_SECTOR) /bootSector->bsSecPerClus + 2;
@@ -457,16 +459,16 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
     if (fatEntries > 4087)
     {
         fatType =  16;
-        fatSectorCnt = (fatEntries * 2 + 511) / 512;
+        fatSectorCnt = (fatEntries * 2 + devExt->DiskGeometry.BytesPerSector-1) / devExt->DiskGeometry.BytesPerSector;
         fatEntries   = fatEntries + fatSectorCnt;
-        fatSectorCnt = (fatEntries * 2 + 511) / 512;
+        fatSectorCnt = (fatEntries * 2 + devExt->DiskGeometry.BytesPerSector-1) / devExt->DiskGeometry.BytesPerSector;
     }
     else
     {
         fatType =  12;
-        fatSectorCnt = (((fatEntries * 3 + 1) / 2) + 511) / 512;
+        fatSectorCnt = (((fatEntries * 3 + 1) / 2) + devExt->DiskGeometry.BytesPerSector-1) / devExt->DiskGeometry.BytesPerSector;
         fatEntries   = fatEntries + fatSectorCnt;
-        fatSectorCnt = (((fatEntries * 3 + 1) / 2) + 511) / 512;
+        fatSectorCnt = (((fatEntries * 3 + 1) / 2) + devExt->DiskGeometry.BytesPerSector-1) / devExt->DiskGeometry.BytesPerSector;
     }
 
     bootSector->bsFATsecs       = fatSectorCnt;
