@@ -9,33 +9,47 @@
 
 [Version]
 Signature="$WINDOWS NT$"
+;签名
 Class=Sample
+;设备类名称
 ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171}
+;设备类GUID
 Provider=%MSFT%
+;INF文件作者
 DriverVer=11/14/1999,5.00.2183.1
+;驱动版本
 CatalogFile=KmdfSamples.cat
+;数字签名文件
 
 [DestinationDirs]
 DefaultDestDir = 12
+;默认目标目录ID
 
 [ClassInstall32]
 Addreg=SampleClassReg
+;添加SampleClassReg参数,在 HKLM\SYSTEM\CurrentControlSet\Control\Class
 
 [SampleClassReg]
 HKR,,,0,%ClassName%
+;设置一个key为%ClassName%,类型为REG_SZ
 HKR,,Icon,,-5
+;Icon设为-5
 
 [DiskCopyfiles]
 WdfRamdisk.sys
+;拷贝文件
 
 [SourceDisksNames]
 1=%InstDisk%,
+;源文件所在盘符序列码=盘描述符
 
 [SourceDisksFiles]
 WdfRamdisk.sys=1
+;源盘上文件的名称=指定文件所在源盘的盘符序列码
 
 [Manufacturer]
 %MSFT% = DiskDevice,NT$ARCH$
+;该厂商的一个或者多个设备能够使用该inf文件进行安装
 
 ; For Win2K
 [DiskDevice]
@@ -47,9 +61,11 @@ WdfRamdisk.sys=1
 
 [DiskInstall.NT]
 CopyFiles = DiskCopyfiles
+;拷贝文件
 
 [DiskInstall.NT.Services]
 AddService = Ramdisk, %SPSVCINST_ASSOCSERVICE%, DiskServiceInst
+;添加服务
 
 [DiskServiceInst]
 ServiceType   = %SERVICE_KERNEL_DRIVER%
@@ -58,6 +74,7 @@ ErrorControl  = %SERVICE_ERROR_NORMAL%
 DisplayName   = %DiskServiceDesc%
 ServiceBinary = %12%\WdfRamdisk.sys
 AddReg        = DiskAddReg
+初始化service
 
 [DiskAddReg]
 HKR, "Parameters", "BreakOnEntry",      %REG_DWORD%, 0x00000000
@@ -67,11 +84,12 @@ HKR, "Parameters", "DiskSize",          %REG_DWORD%, 0x00100000
 HKR, "Parameters", "DriveLetter",       %REG_SZ%,    "R:"
 HKR, "Parameters", "RootDirEntries",    %REG_DWORD%, 0x00000200
 HKR, "Parameters", "SectorsPerCluster", %REG_DWORD%, 0x00000002
-
+;写注册表
 
 ;-------------- Coinstaller installation
 [DestinationDirs]
 CoInstaller_CopyFiles = 11
+;目标文件夹ID
 
 [DiskInstall.NT.CoInstallers]
 AddReg=CoInstaller_AddReg
@@ -79,18 +97,21 @@ CopyFiles=CoInstaller_CopyFiles
 
 [CoInstaller_CopyFiles]
 WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+;拷贝CoInstaller
 
 [SourceDisksFiles]
 WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
 
 [CoInstaller_AddReg]
 HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+;写注册表
 
 [DiskInstall.NT.Wdf]
 KmdfService = Ramdisk, Ramdisk_wdfsect
+;设置kmdf的service
 [Ramdisk_wdfsect]
 KmdfLibraryVersion = $KMDFVERSION$
-
+;kmdf版本
 
 [Strings]
 MSFT            = "Microsoft"
@@ -106,4 +127,5 @@ SERVICE_DEMAND_START   = 3
 SERVICE_ERROR_NORMAL   = 1
 REG_DWORD              = 0x00010001
 REG_SZ                 = 0x00000000
+;定义字符串,类似于#define
 
