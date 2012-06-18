@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics;
 using Microsoft.Win32;
 
 namespace Ramdisk
@@ -79,7 +80,7 @@ namespace Ramdisk
 
         private void button2_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("shutdown", @"/r");
+            Process.Start("shutdown", "-r");    
         }
 
         private void barSize_Scroll(object sender, EventArgs e)
