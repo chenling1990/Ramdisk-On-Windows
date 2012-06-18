@@ -21,7 +21,17 @@ namespace Ramdisk
         {
             this.Close();
         }
-
+        private bool hasExist(char ch, String[] logDrivers)
+        {
+            for (int i = 0; i < logDrivers.Length; i++)
+            {
+                string s = ":\\";
+                s = ch + s;
+                if (s.Equals(logDrivers[i]))
+                    return true;
+            }
+            return false;
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
             string registData;
@@ -35,7 +45,18 @@ namespace Ramdisk
             this.barSize.Value = int.Parse(registData) / (1024 * 1024);
             label3.Text = this.barSize.Value.ToString() + "MB";
             registData = parameters.GetValue("DriveLetter").ToString();
-            this.txtDriveLetter.Text = registData;
+            
+
+            String[] logDrivers = System.IO.Directory.GetLogicalDrives();
+
+            for (char ch = 'C'; ch <= 'Z'; ch++)
+            {
+                if (hasExist(ch, logDrivers)) continue;
+                string add = ":";
+                add = ch + add;
+                choice.Items.Add(add);
+            }
+            choice.Text = registData;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -51,9 +72,19 @@ namespace Ramdisk
             registData = (this.barSize.Value*1024*1024).ToString();
             label3.Text = this.barSize.Value.ToString() + "MB";
             parameters.SetValue("DiskSize", int.Parse(registData));
-            registData = this.txtDriveLetter.Text;
+            registData = choice.Text;
             parameters.SetValue("DriveLetter", registData);
 
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("shutdown", @"/r");
+        }
+
+        private void barSize_Scroll(object sender, EventArgs e)
+        {
+            label3.Text = this.barSize.Value.ToString() + "MB";
         }
     }
 }

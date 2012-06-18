@@ -30,11 +30,12 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtDriveLetter = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.barSize = new System.Windows.Forms.TrackBar();
             this.label3 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
+            this.choice = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.barSize)).BeginInit();
             this.SuspendLayout();
             // 
@@ -56,16 +57,9 @@
             this.label2.TabIndex = 1;
             this.label2.Text = "DriveLetter:";
             // 
-            // txtDriveLetter
-            // 
-            this.txtDriveLetter.Location = new System.Drawing.Point(115, 93);
-            this.txtDriveLetter.Name = "txtDriveLetter";
-            this.txtDriveLetter.Size = new System.Drawing.Size(167, 21);
-            this.txtDriveLetter.TabIndex = 3;
-            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(70, 183);
+            this.button1.Location = new System.Drawing.Point(34, 183);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 4;
@@ -75,7 +69,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(180, 183);
+            this.btnCancel.Location = new System.Drawing.Point(215, 183);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 5;
@@ -90,25 +84,47 @@
             this.barSize.Name = "barSize";
             this.barSize.Size = new System.Drawing.Size(128, 45);
             this.barSize.TabIndex = 6;
+            this.barSize.Scroll += new System.EventHandler(this.barSize_Scroll);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(241, 42);
+            this.label3.Location = new System.Drawing.Point(249, 42);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(0, 12);
+            this.label3.Size = new System.Drawing.Size(41, 12);
             this.label3.TabIndex = 7;
+            this.label3.Text = "label3";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(126, 183);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 8;
+            this.button2.Text = "Reboot";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // choice
+            // 
+            this.choice.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.choice.FormattingEnabled = true;
+            this.choice.Location = new System.Drawing.Point(122, 90);
+            this.choice.Name = "choice";
+            this.choice.Size = new System.Drawing.Size(168, 20);
+            this.choice.TabIndex = 9;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(348, 278);
+            this.ClientSize = new System.Drawing.Size(346, 260);
+            this.Controls.Add(this.choice);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.barSize);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.txtDriveLetter);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -125,11 +141,12 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtDriveLetter;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.TrackBar barSize;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ComboBox choice;
     }
 }
 
