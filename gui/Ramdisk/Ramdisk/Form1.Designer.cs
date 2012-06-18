@@ -30,10 +30,12 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.txtDiskSize = new System.Windows.Forms.TextBox();
             this.txtDriveLetter = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.barSize = new System.Windows.Forms.TrackBar();
+            this.label3 = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.barSize)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -54,23 +56,16 @@
             this.label2.TabIndex = 1;
             this.label2.Text = "DriveLetter:";
             // 
-            // txtDiskSize
-            // 
-            this.txtDiskSize.Location = new System.Drawing.Point(115, 39);
-            this.txtDiskSize.Name = "txtDiskSize";
-            this.txtDiskSize.Size = new System.Drawing.Size(128, 21);
-            this.txtDiskSize.TabIndex = 2;
-            // 
             // txtDriveLetter
             // 
             this.txtDriveLetter.Location = new System.Drawing.Point(115, 93);
             this.txtDriveLetter.Name = "txtDriveLetter";
-            this.txtDriveLetter.Size = new System.Drawing.Size(128, 21);
+            this.txtDriveLetter.Size = new System.Drawing.Size(167, 21);
             this.txtDriveLetter.TabIndex = 3;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(48, 180);
+            this.button1.Location = new System.Drawing.Point(70, 183);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 4;
@@ -80,7 +75,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(158, 180);
+            this.btnCancel.Location = new System.Drawing.Point(180, 183);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 5;
@@ -88,21 +83,39 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // barSize
+            // 
+            this.barSize.Location = new System.Drawing.Point(115, 42);
+            this.barSize.Maximum = 300;
+            this.barSize.Name = "barSize";
+            this.barSize.Size = new System.Drawing.Size(128, 45);
+            this.barSize.TabIndex = 6;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(241, 42);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(0, 12);
+            this.label3.TabIndex = 7;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.ClientSize = new System.Drawing.Size(348, 278);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.barSize);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.txtDriveLetter);
-            this.Controls.Add(this.txtDiskSize);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
             this.Text = "Ramdisk Setting";
             this.Load += new System.EventHandler(this.Form1_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.barSize)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -112,10 +125,11 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtDiskSize;
         private System.Windows.Forms.TextBox txtDriveLetter;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.TrackBar barSize;
+        private System.Windows.Forms.Label label3;
     }
 }
 
