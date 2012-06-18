@@ -1,1 +1,5 @@
 驱动安装程序中的驱动暂为wdk中的sample
+
+gui 可以通过图形窗口对ramdisk的参数进行设置 C#编写
+
+driverSetup 可以安装驱动
