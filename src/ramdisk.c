@@ -247,8 +247,8 @@ NTSTATUS RamDiskEvtDeviceAdd(IN WDFDRIVER Driver,IN PWDFDEVICE_INIT DeviceInit)
     //从注册表获取信息
     RamDiskQueryDiskRegParameters(WdfDriverGetRegistryPath(WdfDeviceGetDriver(device)),&pDeviceExtension->DiskRegInfo);
 
-    //内存分配
-    pDeviceExtension->DiskImage = ExAllocatePoolWithTag(NonPagedPool,pDeviceExtension->DiskRegInfo.DiskSize,RAMDISK_TAG);
+    //内存分配 要使用分页内存
+    pDeviceExtension->DiskImage = ExAllocatePoolWithTag(PagedPool,pDeviceExtension->DiskRegInfo.DiskSize,RAMDISK_TAG);
 
     if (pDeviceExtension->DiskImage)
     {
