@@ -7,5 +7,3 @@ E:\Development\C\Ramdisk-On-Windows\gui\Ramdisk\Ramdisk\obj\x86\Debug\GenerateRe
 E:\Development\C\Ramdisk-On-Windows\gui\Ramdisk\Ramdisk\obj\x86\Debug\GenerateResource.write.1.tlog
 E:\Development\C\Ramdisk-On-Windows\gui\Ramdisk\Ramdisk\obj\x86\Debug\Ramdisk.exe
 E:\Development\C\Ramdisk-On-Windows\gui\Ramdisk\Ramdisk\obj\x86\Debug\Ramdisk.pdb
-C:\Users\chenling\Documents\ramdisk\Ramdisk-On-Windows\gui\Ramdisk\Ramdisk\obj\x86\Debug\Ramdisk.exe
-C:\Users\chenling\Documents\ramdisk\Ramdisk-On-Windows\gui\Ramdisk\Ramdisk\obj\x86\Debug\Ramdisk.pdb
