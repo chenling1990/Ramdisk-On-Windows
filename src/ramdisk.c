@@ -8,69 +8,69 @@
 #pragma alloc_text(PAGE, RamDiskQueryDiskRegParameters)
 #pragma alloc_text(PAGE, RamDiskFormatDisk)
 #endif
-//å‡½æ•°å…¥å£
+/*º¯ÊýÈë¿Ú*/
 NTSTATUS DriverEntry(IN PDRIVER_OBJECT DriverObject, IN PUNICODE_STRING RegistryPath)
 {
     WDF_DRIVER_CONFIG config;
-    //è®¾ç½®æ·»åŠ è®¾å¤‡çš„å‡½æ•°åœ°å€
+    /*ÉèÖÃÌí¼ÓÉè±¸µÄº¯ÊýµØÖ·*/
     WDF_DRIVER_CONFIG_INIT(&config,RamDiskEvtDeviceAdd);
 
     return WdfDriverCreate(DriverObject, RegistryPath, WDF_NO_OBJECT_ATTRIBUTES,&config,WDF_NO_HANDLE);
 }
-//è¯»æ“ä½œ
+//¶Á²Ù×÷
 VOID RamDiskEvtIoRead(IN WDFQUEUE Queue,IN WDFREQUEST Request,IN size_t Length)
 {
     PDEVICE_EXTENSION      devExt = QueueGetExtension(Queue)->DeviceExtension;
-    //ä»Žé˜Ÿåˆ—å¯¹è±¡èŽ·å¾—è®¾å¤‡æ‰©å±•
+    //´Ó¶ÓÁÐ¶ÔÏó»ñµÃÉè±¸À©Õ¹
     NTSTATUS               Status = STATUS_INVALID_PARAMETER;
     WDF_REQUEST_PARAMETERS Parameters;
     LARGE_INTEGER          ByteOffset;
     WDFMEMORY              hMemory;
 
     //__analysis_assume(Length > 0);
-    //å‚æ•°æ¸…0
+    //²ÎÊýÇå0
     WDF_REQUEST_PARAMETERS_INIT(&Parameters);
-    //ä»Žè¯·æ±‚ä¸­èŽ·å–ä¿¡æ¯
+    //´ÓÇëÇóÖÐ»ñÈ¡ÐÅÏ¢
     WdfRequestGetParameters(Request, &Parameters);
-    //è¯»å–åç§»
+    //¶ÁÈ¡Æ«ÒÆ
     ByteOffset.QuadPart = Parameters.Parameters.Read.DeviceOffset;
-    //æ£€æµ‹è¯»å–æ˜¯å¦åˆæ³•
+    //¼ì²â¶ÁÈ¡ÊÇ·ñºÏ·¨
     if (RamDiskCheckParameters(devExt, ByteOffset, Length))
     {
-        //èŽ·å¾—å†…å­˜çŠ¶æ€
+        //»ñµÃÄÚ´æ×´Ì¬
         Status = WdfRequestRetrieveOutputMemory(Request, &hMemory);
         if(NT_SUCCESS(Status))
         {
-            // Destination #ã€€Offset into the destination ï¼ƒã€€source
+            // Destination #¡¡Offset into the destination ££¡¡source
             Status = WdfMemoryCopyFromBuffer(hMemory,0, devExt->DiskImage + ByteOffset.LowPart, Length);
         }
     }
 
     WdfRequestCompleteWithInformation(Request, Status, (ULONG_PTR)Length);
 }
-// å†™æ“ä½œ
+// Ð´²Ù×÷
 VOID RamDiskEvtIoWrite(IN WDFQUEUE Queue,IN WDFREQUEST Request,IN size_t Length)
 {
     PDEVICE_EXTENSION      devExt = QueueGetExtension(Queue)->DeviceExtension;
-    //ä»Žé˜Ÿåˆ—å¯¹è±¡èŽ·å¾—è®¾å¤‡æ‰©å±•
+    //´Ó¶ÓÁÐ¶ÔÏó»ñµÃÉè±¸À©Õ¹
     NTSTATUS               Status = STATUS_INVALID_PARAMETER;
     WDF_REQUEST_PARAMETERS Parameters;
     LARGE_INTEGER          ByteOffset;
     WDFMEMORY              hMemory;
 
     //__analysis_assume(Length > 0);
-    //å‚æ•°æ¸…0
+    //²ÎÊýÇå0
     WDF_REQUEST_PARAMETERS_INIT(&Parameters);
-    //ä»Žè¯·æ±‚ä¸­èŽ·å–ä¿¡æ¯
+    //´ÓÇëÇóÖÐ»ñÈ¡ÐÅÏ¢
     WdfRequestGetParameters(Request, &Parameters);
-    //å†™å…¥åç§»
+    //Ð´ÈëÆ«ÒÆ
     ByteOffset.QuadPart = Parameters.Parameters.Write.DeviceOffset;
-    //æ£€æµ‹å†™å…¥æ˜¯å¦åˆæ³•
+    //¼ì²âÐ´ÈëÊÇ·ñºÏ·¨
     if (RamDiskCheckParameters(devExt, ByteOffset, Length))
     {
         // from output to input
         Status = WdfRequestRetrieveInputMemory(Request, &hMemory);
-        //èŽ·å¾—å†…å­˜çŠ¶æ€
+        //»ñµÃÄÚ´æ×´Ì¬
         if(NT_SUCCESS(Status))
         {
             // Source # offset in Source memory where the copy has to start # destination
@@ -88,7 +88,7 @@ VOID RamDiskEvtIoDeviceControl(IN WDFQUEUE Queue,IN WDFREQUEST Request,IN size_t
     ULONG_PTR         information = 0;
     size_t            bufSize;
     PDEVICE_EXTENSION devExt = QueueGetExtension(Queue)->DeviceExtension;
-    //ä»Žé˜Ÿåˆ—å¯¹è±¡èŽ·å¾—è®¾å¤‡æ‰©å±•
+    //´Ó¶ÓÁÐ¶ÔÏó»ñµÃÉè±¸À©Õ¹
     UNREFERENCED_PARAMETER(OutputBufferLength);
     UNREFERENCED_PARAMETER(InputBufferLength);
 
@@ -101,26 +101,26 @@ VOID RamDiskEvtIoDeviceControl(IN WDFQUEUE Queue,IN WDFREQUEST Request,IN size_t
             PBOOT_SECTOR bootSector = (PBOOT_SECTOR) devExt->DiskImage;
 
             information = sizeof(PARTITION_INFORMATION);
-            //ä¿¡æ¯çš„é•¿åº¦
+            //ÐÅÏ¢µÄ³¤¶È
 
             Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(PARTITION_INFORMATION), &outputBuffer, &bufSize);
             if(NT_SUCCESS(Status) )
             {
-                //åˆ†åŒºç±»åž‹ FAT16 FAT12
+                //·ÖÇøÀàÐÍ FAT16 FAT12
                 outputBuffer->PartitionType = (bootSector->bsFileSystemType[4] == '6') ? PARTITION_FAT_16 : PARTITION_FAT_12;
-                //ä¸å¯å¼•å¯¼
+                //²»¿ÉÒýµ¼
                 outputBuffer->BootIndicator       = FALSE;
-                //å¯è¯†åˆ«åˆ†åŒº
+                //¿ÉÊ¶±ð·ÖÇø
                 outputBuffer->RecognizedPartition = TRUE;
-                //ä¿¡æ¯æœªå˜
+                //ÐÅÏ¢Î´±ä
                 outputBuffer->RewritePartition    = FALSE;
-                //å¼€å§‹åç§»é‡
+                //¿ªÊ¼Æ«ÒÆÁ¿
                 outputBuffer->StartingOffset.QuadPart = 0;
-                //ç£ç›˜å¤§å°
+                //´ÅÅÌ´óÐ¡
                 outputBuffer->PartitionLength.QuadPart = devExt->DiskRegInfo.DiskSize;
-                //éšè—åˆ†åŒº
+                //Òþ²Ø·ÖÇø
                 outputBuffer->HiddenSectors       = (ULONG) (1L);
-                //åˆ†åŒºå·
+                //·ÖÇøºÅ
                 outputBuffer->PartitionNumber     = (ULONG) (-1L);
 
                 Status = STATUS_SUCCESS;
@@ -130,21 +130,21 @@ VOID RamDiskEvtIoDeviceControl(IN WDFQUEUE Queue,IN WDFREQUEST Request,IN size_t
 
         case IOCTL_DISK_GET_DRIVE_GEOMETRY:
         {
-            //ç‰©ç†ä¿¡æ¯
+            //ÎïÀíÐÅÏ¢
             PDISK_GEOMETRY outputBuffer;
-            //ä¿¡æ¯çš„é•¿åº¦
+            //ÐÅÏ¢µÄ³¤¶È
             information = sizeof(DISK_GEOMETRY);
 
             Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(DISK_GEOMETRY), &outputBuffer, &bufSize);
             if(NT_SUCCESS(Status) )
             {
-                //å†…å­˜copy
+                //ÄÚ´æcopy
                 RtlCopyMemory(outputBuffer, &(devExt->DiskGeometry), sizeof(DISK_GEOMETRY));
                 Status = STATUS_SUCCESS;
             }
         }
         break;
-        //ç£ç›˜æ ¡éªŒ æ˜¯å¦å¯å†™
+        //´ÅÅÌÐ£Ñé ÊÇ·ñ¿ÉÐ´
         case IOCTL_DISK_CHECK_VERIFY:
         case IOCTL_DISK_IS_WRITABLE:
 
@@ -157,15 +157,15 @@ VOID RamDiskEvtIoDeviceControl(IN WDFQUEUE Queue,IN WDFREQUEST Request,IN size_t
 VOID RamDiskEvtDeviceContextCleanup(IN WDFOBJECT Device)
 {
     PDEVICE_EXTENSION pDeviceExtension = DeviceGetExtension(Device);
-    //èŽ·å¾—è®¾å¤‡æ‰©å±•
+    //»ñµÃÉè±¸À©Õ¹
     PAGED_CODE();
-    //æ¸…ç©ºæ“ä½œ
+    //Çå¿Õ²Ù×÷
     if(pDeviceExtension->DiskImage)
     {
         ExFreePool(pDeviceExtension->DiskImage);
     }
 }
-// æ·»åŠ è®¾å¤‡
+// Ìí¼ÓÉè±¸
 NTSTATUS RamDiskEvtDeviceAdd(IN WDFDRIVER Driver,IN PWDFDEVICE_INIT DeviceInit)
 {
     WDF_OBJECT_ATTRIBUTES   deviceAttributes;
@@ -176,30 +176,30 @@ NTSTATUS RamDiskEvtDeviceAdd(IN WDFDRIVER Driver,IN PWDFDEVICE_INIT DeviceInit)
     PDEVICE_EXTENSION       pDeviceExtension;
     PQUEUE_EXTENSION        pQueueContext = NULL;
     WDFQUEUE                queue;
-    //è®¾å¤‡å
+    //Éè±¸Ãû
     DECLARE_CONST_UNICODE_STRING(ntDeviceName, NT_DEVICE_NAME);
 
     PAGED_CODE();
 
     UNREFERENCED_PARAMETER(Driver);
 
-    //æ£€æŸ¥æŒ‡å®šåç§°çŠ¶æ€
+    //¼ì²éÖ¸¶¨Ãû³Æ×´Ì¬
     status = WdfDeviceInitAssignName(DeviceInit, &ntDeviceName);
     if (!NT_SUCCESS(status))
     {
         return status;
     }
-    //æŒ‡å®šè®¾å¤‡ç±»åž‹
+    //Ö¸¶¨Éè±¸ÀàÐÍ
     WdfDeviceInitSetDeviceType(DeviceInit, FILE_DEVICE_DISK);
-    //IOç±»åž‹
+    //IOÀàÐÍ
     WdfDeviceInitSetIoType(DeviceInit, WdfDeviceIoDirect);
-    //æ˜¯å¦ç‹¬å 
+    //ÊÇ·ñ¶ÀÕ¼
     WdfDeviceInitSetExclusive(DeviceInit, FALSE);
-    //åˆå§‹åŒ–
+    //³õÊ¼»¯
     WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&deviceAttributes, DEVICE_EXTENSION);
-    //è®¾å®šcleanup å‡½æ•°æŒ‡é’ˆ
+    //Éè¶¨cleanup º¯ÊýÖ¸Õë
     deviceAttributes.EvtCleanupCallback = RamDiskEvtDeviceContextCleanup;
-    //èŽ·å–åˆ›å»ºè®¾å¤‡çŠ¶æ€
+    //»ñÈ¡´´½¨Éè±¸×´Ì¬
     status = WdfDeviceCreate(&DeviceInit, &deviceAttributes, &device);
     if (!NT_SUCCESS(status))
     {
@@ -228,52 +228,50 @@ NTSTATUS RamDiskEvtDeviceAdd(IN WDFDRIVER Driver,IN PWDFDEVICE_INIT DeviceInit)
         return status;
     }
 
-    //èŽ·å¾—è®¾å¤‡æ‰©å±•
+    //»ñµÃÉè±¸À©Õ¹
     pQueueContext = QueueGetExtension(queue);
 
-    //è®¾ç½®é˜Ÿåˆ—çš„è®¾å¤‡æ‰©å±•ä¸ºè¯¥è®¾å¤‡
+    //ÉèÖÃ¶ÓÁÐµÄÉè±¸À©Õ¹Îª¸ÃÉè±¸
     pQueueContext->DeviceExtension = pDeviceExtension;
 
-    /*status = SetForwardProgressOnQueue(queue);
+    status = SetForwardProgressOnQueue(queue);
     if (!NT_SUCCESS(status))
     {
         return status;
-    }*/
+    }
 
-    //è®¾å¤‡åˆå§‹åŒ–
+    //Éè±¸³õÊ¼»¯
     pDeviceExtension->DiskRegInfo.DriveLetter.Buffer = (PWSTR) &pDeviceExtension->DriveLetterBuffer;
     pDeviceExtension->DiskRegInfo.DriveLetter.MaximumLength = sizeof(pDeviceExtension->DriveLetterBuffer);
 
-    //ä»Žæ³¨å†Œè¡¨èŽ·å–ä¿¡æ¯
+    //´Ó×¢²á±í»ñÈ¡ÐÅÏ¢
     RamDiskQueryDiskRegParameters(WdfDriverGetRegistryPath(WdfDeviceGetDriver(device)),&pDeviceExtension->DiskRegInfo);
 
-    //å†…å­˜åˆ†é…
-    //pDeviceExtension->DiskImage = ExAllocatePoolWithTag(NonPagedPool,pDeviceExtension->DiskRegInfo.DiskSize,RAMDISK_TAG);
-		pDeviceExtension->DiskImage = ExAllocatePoolWithTag(PagedPool,pDeviceExtension->DiskRegInfo.DiskSize,RAMDISK_TAG);
-
+    //ÄÚ´æ·ÖÅä
+    pDeviceExtension->DiskImage = ExAllocatePoolWithTag(NonPagedPool,pDeviceExtension->DiskRegInfo.DiskSize,RAMDISK_TAG);
 
     if (pDeviceExtension->DiskImage)
     {
-        //æˆåŠŸåˆ†é…
+        //³É¹¦·ÖÅä
         UNICODE_STRING deviceName;
         UNICODE_STRING win32Name;
 
         RamDiskFormatDisk(pDeviceExtension);
-        //æ ¼å¼åŒ–
+        //¸ñÊ½»¯
         status = STATUS_SUCCESS;
 
-        //åˆ›å»ºç¬¦å·é“¾æŽ¥
+        //´´½¨·ûºÅÁ´½Ó
         RtlInitUnicodeString(&win32Name, DOS_DEVICE_NAME);
         RtlInitUnicodeString(&deviceName, NT_DEVICE_NAME);
 
-        //ç¬¦å·é“¾æŽ¥åˆå§‹åŒ–
+        //·ûºÅÁ´½Ó³õÊ¼»¯
         pDeviceExtension->SymbolicLink.Buffer = (PWSTR)&pDeviceExtension->DosDeviceNameBuffer;
         pDeviceExtension->SymbolicLink.MaximumLength = sizeof(pDeviceExtension->DosDeviceNameBuffer);
         pDeviceExtension->SymbolicLink.Length = win32Name.Length;
 
         RtlCopyUnicodeString(&pDeviceExtension->SymbolicLink, &win32Name);
         RtlAppendUnicodeStringToString(&pDeviceExtension->SymbolicLink,&pDeviceExtension->DiskRegInfo.DriveLetter);
-        //åˆ›å»ºç¬¦å·é“¾æŽ¥
+        //´´½¨·ûºÅÁ´½Ó
         status = WdfDeviceCreateSymbolicLink(device,&pDeviceExtension->SymbolicLink);
     }
 
@@ -282,7 +280,7 @@ NTSTATUS RamDiskEvtDeviceAdd(IN WDFDRIVER Driver,IN PWDFDEVICE_INIT DeviceInit)
 VOID RamDiskQueryDiskRegParameters(__in PWSTR RegistryPath,__in PDISK_INFO DiskRegInfo)
 {
 
-    RTL_QUERY_REGISTRY_TABLE rtlQueryRegTbl[5 + 1];   //éœ€è¦ä¸€ä¸ªåŽé¢ä¸º'\0'
+    RTL_QUERY_REGISTRY_TABLE rtlQueryRegTbl[5 + 1];   //ÐèÒªÒ»¸öºóÃæÎª'\0'
     NTSTATUS                 Status;
     DISK_INFO                defDiskRegInfo;
 
@@ -290,18 +288,18 @@ VOID RamDiskQueryDiskRegParameters(__in PWSTR RegistryPath,__in PDISK_INFO DiskR
 
     //ASSERT(RegistryPath != NULL);
 
-    // é»˜è®¤å€¼
+    // Ä¬ÈÏÖµ
 
     defDiskRegInfo.DiskSize          = DEFAULT_DISK_SIZE;
     defDiskRegInfo.RootDirEntries    = DEFAULT_ROOT_DIR_ENTRIES;
     defDiskRegInfo.SectorsPerCluster = DEFAULT_SECTORS_PER_CLUSTER;
 
-    //é»˜è®¤ç›˜ç¬¦
+    //Ä¬ÈÏÅÌ·û
     RtlInitUnicodeString(&defDiskRegInfo.DriveLetter, DEFAULT_DRIVE_LETTER);
 
     RtlZeroMemory(rtlQueryRegTbl, sizeof(rtlQueryRegTbl));
 
-    //è®¾ç½®æŸ¥è¯¢è¡¨
+    //ÉèÖÃ²éÑ¯±í
 
     rtlQueryRegTbl[0].Flags         = RTL_QUERY_REGISTRY_SUBKEY;
     rtlQueryRegTbl[0].Name          = L"Parameters";
@@ -310,7 +308,7 @@ VOID RamDiskQueryDiskRegParameters(__in PWSTR RegistryPath,__in PDISK_INFO DiskR
     rtlQueryRegTbl[0].DefaultData   = NULL;
     rtlQueryRegTbl[0].DefaultLength = (ULONG_PTR)NULL;
 
-    //ç£ç›˜å‚æ•°
+    //´ÅÅÌ²ÎÊý
 
     rtlQueryRegTbl[1].Flags         = RTL_QUERY_REGISTRY_DIRECT;
     rtlQueryRegTbl[1].Name          = L"DiskSize";
@@ -319,7 +317,7 @@ VOID RamDiskQueryDiskRegParameters(__in PWSTR RegistryPath,__in PDISK_INFO DiskR
     rtlQueryRegTbl[1].DefaultData   = &defDiskRegInfo.DiskSize;
     rtlQueryRegTbl[1].DefaultLength = sizeof(ULONG);
 
-    //æ–‡ä»¶ç³»ç»Ÿè¿›å…¥ç‚¹
+    //ÎÄ¼þÏµÍ³½øÈëµã
     rtlQueryRegTbl[2].Flags         = RTL_QUERY_REGISTRY_DIRECT;
     rtlQueryRegTbl[2].Name          = L"RootDirEntries";
     rtlQueryRegTbl[2].EntryContext  = &DiskRegInfo->RootDirEntries;
@@ -327,14 +325,14 @@ VOID RamDiskQueryDiskRegParameters(__in PWSTR RegistryPath,__in PDISK_INFO DiskR
     rtlQueryRegTbl[2].DefaultData   = &defDiskRegInfo.RootDirEntries;
     rtlQueryRegTbl[2].DefaultLength = sizeof(ULONG);
 
-    //è®¾ç½®æ‰‡åŒºæ•°
+    //ÉèÖÃÉÈÇøÊý
     rtlQueryRegTbl[3].Flags         = RTL_QUERY_REGISTRY_DIRECT;
     rtlQueryRegTbl[3].Name          = L"SectorsPerCluster";
     rtlQueryRegTbl[3].EntryContext  = &DiskRegInfo->SectorsPerCluster;
     rtlQueryRegTbl[3].DefaultType   = REG_DWORD;
     rtlQueryRegTbl[3].DefaultData   = &defDiskRegInfo.SectorsPerCluster;
     rtlQueryRegTbl[3].DefaultLength = sizeof(ULONG);
-    //ç›˜ç¬¦
+    //ÅÌ·û
     rtlQueryRegTbl[4].Flags         = RTL_QUERY_REGISTRY_DIRECT;
     rtlQueryRegTbl[4].Name          = L"DriveLetter";
     rtlQueryRegTbl[4].EntryContext  = &DiskRegInfo->DriveLetter;
@@ -360,13 +358,13 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
 {
 
     PBOOT_SECTOR bootSector = (PBOOT_SECTOR) devExt->DiskImage;
-    PUCHAR       firstFatSector; // æŒ‡å‘ç¬¬ä¸€ä¸ªFATè¡¨çš„æŒ‡é’ˆ
-    ULONG        rootDirEntries; // è®°å½•æœ‰å¤šå°‘æ ¹ç›®å½•å…¥å£ç‚¹
-    ULONG        sectorsPerCluster; // æ¯ä¸ªæ—æœ‰å¤šå°‘ä¸ªæ‰‡åŒºæž„æˆ
-    USHORT       fatType;        // è®°å½•FATæ–‡ä»¶ç³»ç»Ÿç±»åž‹, FAT12/16
-    USHORT       fatEntries;     // è®°å½•FATè¡¨é‡Œé¢æœ‰å¤šå°‘ä¸ªè¡¨é¡¹
-    USHORT       fatSectorCnt;   // ç”¨äºŽè®°å½•ä¸€ä¸ªFATè¡¨é¡¹éœ€è¦å ç”¨å¤šå°‘ä¸ªæ‰‡åŒº
-    PDIR_ENTRY   rootDir;        // æ ¹ç›®å½•å…¥å£ç‚¹
+    PUCHAR       firstFatSector; // Ö¸ÏòµÚÒ»¸öFAT±íµÄÖ¸Õë
+    ULONG        rootDirEntries; // ¼ÇÂ¼ÓÐ¶àÉÙ¸ùÄ¿Â¼Èë¿Úµã
+    ULONG        sectorsPerCluster; // Ã¿¸ö×åÓÐ¶àÉÙ¸öÉÈÇø¹¹³É
+    USHORT       fatType;        // ¼ÇÂ¼FATÎÄ¼þÏµÍ³ÀàÐÍ, FAT12/16
+    USHORT       fatEntries;     // ¼ÇÂ¼FAT±íÀïÃæÓÐ¶àÉÙ¸ö±íÏî
+    USHORT       fatSectorCnt;   // ÓÃÓÚ¼ÇÂ¼Ò»¸öFAT±íÏîÐèÒªÕ¼ÓÃ¶àÉÙ¸öÉÈÇø
+    PDIR_ENTRY   rootDir;        // ¸ùÄ¿Â¼Èë¿Úµã
 
     PAGED_CODE();
     ASSERT(sizeof(BOOT_SECTOR) == 512);
@@ -374,27 +372,27 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
 
     RtlZeroMemory(devExt->DiskImage, devExt->DiskRegInfo.DiskSize);
 
-    devExt->DiskGeometry.BytesPerSector = 4096;  //æ¯ä¸ªæ‰‡åŒºæœ‰512ä¸ªå­—èŠ‚
-    devExt->DiskGeometry.SectorsPerTrack = 32;  // æ¯ä¸ªç£é“æœ‰32ä¸ªæ‰‡åŒº
-    devExt->DiskGeometry.TracksPerCylinder = 2; // æ¯ä¸ªæŸ±é¢æœ‰ä¸¤ä¸ªç£é“
+    devExt->DiskGeometry.BytesPerSector = 512;  //Ã¿¸öÉÈÇøÓÐ512¸ö×Ö½Ú
+    devExt->DiskGeometry.SectorsPerTrack = 32;  // Ã¿¸ö´ÅµÀÓÐ32¸öÉÈÇø
+    devExt->DiskGeometry.TracksPerCylinder = 2; // Ã¿¸öÖùÃæÓÐÁ½¸ö´ÅµÀ
 
-    //æŸ±é¢æ•°
-    devExt->DiskGeometry.Cylinders.QuadPart = devExt->DiskRegInfo.DiskSize / devExt->DiskGeometry.BytesPerSector / devExt->DiskGeometry.SectorsPerTrack / devExt->DiskGeometry.TracksPerCylinder;
+    //ÖùÃæÊý
+    devExt->DiskGeometry.Cylinders.QuadPart = devExt->DiskRegInfo.DiskSize / 512 / 32 / 2;
 
-    //ç£ç›˜çš„ç±»åž‹
+    //´ÅÅÌµÄÀàÐÍ
     devExt->DiskGeometry.MediaType = RAMDISK_MEDIA_TYPE;
 
     rootDirEntries = devExt->DiskRegInfo.RootDirEntries;
     sectorsPerCluster = devExt->DiskRegInfo.SectorsPerCluster;
 
-    //ç©ºé—´å¯¹é½
+    //¿Õ¼ä¶ÔÆë
 
     if (rootDirEntries & (DIR_ENTRIES_PER_SECTOR - 1))
     {
         rootDirEntries = (rootDirEntries + (DIR_ENTRIES_PER_SECTOR - 1)) &~ (DIR_ENTRIES_PER_SECTOR - 1);
     }
 
-    //æ–‡ä»¶ç³»ç»Ÿçš„æ£€æŸ¥æ ‡è®°
+    //ÎÄ¼þÏµÍ³µÄ¼ì²é±ê¼Ç
 
     bootSector->bsJump[0] = 0xeb;
     bootSector->bsJump[1] = 0x3c;
@@ -418,8 +416,8 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
     bootSector->bsFATs        = 1;
     bootSector->bsRootDirEnts = (USHORT)rootDirEntries;
 
- //   bootSector->bsSectors     = (USHORT)(devExt->DiskRegInfo.DiskSize /
- //                                        devExt->DiskGeometry.BytesPerSector);
+//    bootSector->bsSectors     = (USHORT)(devExt->DiskRegInfo.DiskSize /
+//                                         devExt->DiskGeometry.BytesPerSector);
 //    bootSector->bsMedia       = (UCHAR)devExt->DiskGeometry.MediaType;
 //    bootSector->bsSecPerClus  = (UCHAR)sectorsPerCluster;
 
@@ -435,14 +433,14 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
     }
     bootSector->bsMedia       = (UCHAR)devExt->DiskGeometry.MediaType;
     bootSector->bsSecPerClus  = 8;//(UCHAR)sectorsPerCluster;
-    
+    //
     // Calculate number of sectors required for FAT
     //
 
- //   fatEntries =
- //       (bootSector->bsSectors - bootSector->bsResSectors -
- //       bootSector->bsRootDirEnts / DIR_ENTRIES_PER_SECTOR) /
- //       bootSector->bsSecPerClus + 2;
+//    fatEntries =
+//        (bootSector->bsSectors - bootSector->bsResSectors -
+//         bootSector->bsRootDirEnts / DIR_ENTRIES_PER_SECTOR) /
+//        bootSector->bsSecPerClus + 2;
     if(bootSector->bsSectors)
     {
         fatEntries = (bootSector->bsSectors - bootSector->bsResSectors - bootSector->bsRootDirEnts / DIR_ENTRIES_PER_SECTOR) /bootSector->bsSecPerClus + 2;
@@ -459,16 +457,16 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
     if (fatEntries > 4087)
     {
         fatType =  16;
-        fatSectorCnt = (fatEntries * 2 + devExt->DiskGeometry.BytesPerSector-1) / devExt->DiskGeometry.BytesPerSector;
+        fatSectorCnt = (fatEntries * 2 + 511) / 512;
         fatEntries   = fatEntries + fatSectorCnt;
-        fatSectorCnt = (fatEntries * 2 + devExt->DiskGeometry.BytesPerSector-1) / devExt->DiskGeometry.BytesPerSector;
+        fatSectorCnt = (fatEntries * 2 + 511) / 512;
     }
     else
     {
         fatType =  12;
-        fatSectorCnt = (((fatEntries * 3 + 1) / 2) + devExt->DiskGeometry.BytesPerSector-1) / devExt->DiskGeometry.BytesPerSector;
+        fatSectorCnt = (((fatEntries * 3 + 1) / 2) + 511) / 512;
         fatEntries   = fatEntries + fatSectorCnt;
-        fatSectorCnt = (((fatEntries * 3 + 1) / 2) + devExt->DiskGeometry.BytesPerSector-1) / devExt->DiskGeometry.BytesPerSector;
+        fatSectorCnt = (((fatEntries * 3 + 1) / 2) + 511) / 512;
     }
 
     bootSector->bsFATsecs       = fatSectorCnt;
@@ -493,7 +491,7 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
     bootSector->bsLabel[9]  = ' ';
     bootSector->bsLabel[10] = ' ';
 
-    //æ–‡ä»¶ç³»ç»Ÿå
+    //ÎÄ¼þÏµÍ³Ãû
     bootSector->bsFileSystemType[0] = 'F';
     bootSector->bsFileSystemType[1] = 'A';
     bootSector->bsFileSystemType[2] = 'T';
@@ -522,20 +520,20 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
         firstFatSector[3] = 0xFF;
     }
 
-    //å…¥å£ç‚¹
+    //Èë¿Úµã
     rootDir = (PDIR_ENTRY)(bootSector + 1 + fatSectorCnt);
 
-    //å·æ ‡
-    rootDir->deName[0] = 'R';
-    rootDir->deName[1] = 'A';
-    rootDir->deName[2] = 'M';
-    rootDir->deName[3] = 'D';
-    rootDir->deName[4] = 'I';
-    rootDir->deName[5] = 'S';
-    rootDir->deName[6] = 'K';
-    rootDir->deName[7] = ' ';
+    //¾í±ê
+    rootDir->deName[0] = 'M';
+    rootDir->deName[1] = 'S';
+    rootDir->deName[2] = '-';
+    rootDir->deName[3] = 'R';
+    rootDir->deName[4] = 'A';
+    rootDir->deName[5] = 'M';
+    rootDir->deName[6] = 'D';
+    rootDir->deName[7] = 'R';
 
-    //è®¾å¤‡æ‰©å±•å
+    //Éè±¸À©Õ¹Ãû
     rootDir->deExtension[0] = 'I';
     rootDir->deExtension[1] = 'V';
     rootDir->deExtension[2] = 'E';
@@ -546,16 +544,16 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
 }
 BOOLEAN RamDiskCheckParameters(IN PDEVICE_EXTENSION devExt,IN LARGE_INTEGER ByteOffset,IN size_t Length)
 {
-    //å¦‚æžœç£ç›˜çš„å¤§å°å°äºŽè¯»å–çš„é•¿åº¦
+    //Èç¹û´ÅÅÌµÄ´óÐ¡Ð¡ÓÚ¶ÁÈ¡µÄ³¤¶È
     if( devExt->DiskRegInfo.DiskSize < Length)
         return FALSE;
-    // åç§»å°äºŽ0
+    // Æ«ÒÆÐ¡ÓÚ0
     if(ByteOffset.QuadPart < 0)
         return FALSE;
-    //åç§»å¤§äºŽç£ç›˜å¤§å°+è¯»å–çš„é•¿åº¦
+    //Æ«ÒÆ´óÓÚ´ÅÅÌ´óÐ¡+¶ÁÈ¡µÄ³¤¶È
     if ((ULONGLONG)ByteOffset.QuadPart > (devExt->DiskRegInfo.DiskSize - Length))
         return FALSE;
-    //èŽ·å–é•¿åº¦æœ‰æ²¡æœ‰æŒ‰ç…§æ‰‡åŒºå¯¹é½
+    //»ñÈ¡³¤¶ÈÓÐÃ»ÓÐ°´ÕÕÉÈÇø¶ÔÆë
     if( (Length & (devExt->DiskGeometry.BytesPerSector - 1)))
         return FALSE;
     return TRUE;

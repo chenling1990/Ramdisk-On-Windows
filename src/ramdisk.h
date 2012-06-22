@@ -1,7 +1,25 @@
+/*++
+
+Copyright (c) 1990-2003 Microsoft Corporation, All Rights Reserved
+
+Module Name:
+
+    ramdisk.h
+
+Abstract:
+
+    This file includes data declarations for the Ram Disk driver for NT.
+
+Environment:
+
+    Kernel mode only.
+
+--*/
+
 #ifndef _RAMDISK_H_
 #define _RAMDISK_H_
 
-#pragma warning(disable:4201) 
+#pragma warning(disable:4201)  // nameless struct/union warning
 
 #include <ntddk.h>
 #include <ntdddisk.h>
@@ -11,6 +29,7 @@
 #include <wdf.h>
 #define NTSTRSAFE_LIB
 #include <ntstrsafe.h>
+#include "forward_progress.h"
 
 #define NT_DEVICE_NAME                  L"\\Device\\Ramdisk"
 #define DOS_DEVICE_NAME                 L"\\DosDevices\\"
@@ -135,5 +154,11 @@ RamDiskCheckParameters(
     IN size_t Length
     );
 
-#endif   
+EVT_WDF_OBJECT_CONTEXT_CLEANUP EvtForwardProgressRequestCleanup;
+EVT_WDF_OBJECT_CONTEXT_DESTROY EvtForwardProgressRequestDestroy;
+EVT_WDF_IO_WDM_IRP_FOR_FORWARD_PROGRESS EvtIoWdmIrpForForwardProgress;
+EVT_WDF_IO_ALLOCATE_RESOURCES_FOR_RESERVED_REQUEST EvtIoAllocateResourcesForReservedRequest;
+EVT_WDF_IO_ALLOCATE_REQUEST_RESOURCES EvtIoAllocateResources;
+
+#endif    // _RAMDISK_H_
 
