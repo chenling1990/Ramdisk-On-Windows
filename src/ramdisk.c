@@ -372,13 +372,13 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
 
     RtlZeroMemory(devExt->DiskImage, devExt->DiskRegInfo.DiskSize);
 
-    devExt->DiskGeometry.BytesPerSector = 512;  //每个扇区有512个字节
+    devExt->DiskGeometry.BytesPerSector = 4096;//512;  //每个扇区有512个字节
     devExt->DiskGeometry.SectorsPerTrack = 32;  // 每个磁道有32个扇区
     devExt->DiskGeometry.TracksPerCylinder = 2; // 每个柱面有两个磁道
 
     //柱面数
-    devExt->DiskGeometry.Cylinders.QuadPart = devExt->DiskRegInfo.DiskSize / 512 / 32 / 2;
-
+    //devExt->DiskGeometry.Cylinders.QuadPart = devExt->DiskRegInfo.DiskSize / 512 / 32 / 2;
+    devExt->DiskGeometry.Cylinders.QuadPart = devExt->DiskRegInfo.DiskSize / 4096 / 32 / 2;
     //磁盘的类型
     devExt->DiskGeometry.MediaType = RAMDISK_MEDIA_TYPE;
 
@@ -432,7 +432,7 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
         bootSector->bsHugeSectors = devExt->DiskRegInfo.DiskSize / devExt->DiskGeometry.BytesPerSector;
     }
     bootSector->bsMedia       = (UCHAR)devExt->DiskGeometry.MediaType;
-    bootSector->bsSecPerClus  = 8;//(UCHAR)sectorsPerCluster;
+    bootSector->bsSecPerClus  = (UCHAR)sectorsPerCluster;
     //
     // Calculate number of sectors required for FAT
     //
@@ -457,16 +457,20 @@ NTSTATUS RamDiskFormatDisk(IN PDEVICE_EXTENSION devExt)
     if (fatEntries > 4087)
     {
         fatType =  16;
-        fatSectorCnt = (fatEntries * 2 + 511) / 512;
+        //fatSectorCnt = (fatEntries * 2 + 511) / 512;
+        fatSectorCnt = (fatEntries * 2 + 4096-1) / 4096;
         fatEntries   = fatEntries + fatSectorCnt;
-        fatSectorCnt = (fatEntries * 2 + 511) / 512;
+        //fatSectorCnt = (fatEntries * 2 + 511) / 512;
+        fatSectorCnt = (fatEntries * 2 + 4096-1) / 4096;
     }
     else
     {
         fatType =  12;
-        fatSectorCnt = (((fatEntries * 3 + 1) / 2) + 511) / 512;
+        //fatSectorCnt = (((fatEntries * 3 + 1) / 2) + 511) / 512;
+        fatSectorCnt = (((fatEntries * 3 + 1) / 2) + 4096-1) / 4096;
         fatEntries   = fatEntries + fatSectorCnt;
-        fatSectorCnt = (((fatEntries * 3 + 1) / 2) + 511) / 512;
+        //fatSectorCnt = (((fatEntries * 3 + 1) / 2) + 511) / 512;
+        fatSectorCnt = (((fatEntries * 3 + 1) / 2) + 4096-1) / 4096;
     }
 
     bootSector->bsFATsecs       = fatSectorCnt;
