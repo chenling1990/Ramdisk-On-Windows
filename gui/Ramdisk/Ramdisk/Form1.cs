@@ -43,7 +43,7 @@ namespace Ramdisk
             RegistryKey ramdisk = services.OpenSubKey("Ramdisk", true);
             RegistryKey parameters = ramdisk.OpenSubKey("Parameters", true);
             registData = parameters.GetValue("DiskSize").ToString();
-            this.barSize.Value = int.Parse(registData) / (1024 * 1024);
+            this.barSize.Value = int.Parse(registData) / (1000 * 1000);
             label3.Text = this.barSize.Value.ToString() + "MB";
             registData = parameters.GetValue("DriveLetter").ToString();
             
@@ -70,7 +70,7 @@ namespace Ramdisk
             RegistryKey ramdisk = services.OpenSubKey("Ramdisk", true);
             RegistryKey parameters = ramdisk.OpenSubKey("Parameters", true);
 
-            registData = (this.barSize.Value*1024*1024).ToString();
+            registData = (this.barSize.Value*1000*1000).ToString();
             label3.Text = this.barSize.Value.ToString() + "MB";
             parameters.SetValue("DiskSize", int.Parse(registData));
             registData = choice.Text;

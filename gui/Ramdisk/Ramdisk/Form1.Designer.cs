@@ -80,7 +80,7 @@
             // barSize
             // 
             this.barSize.Location = new System.Drawing.Point(115, 42);
-            this.barSize.Maximum = 300;
+            this.barSize.Maximum = 500;
             this.barSize.Name = "barSize";
             this.barSize.Size = new System.Drawing.Size(128, 45);
             this.barSize.TabIndex = 6;
